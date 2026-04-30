@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perkenalan Kelas XII TJKT 1</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #020617;
+    color: white;
+    overflow-x: hidden;
+}
+
+#network-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #22d3ee;
+}
+
+.card {
+    background: rgba(15, 23, 42, 0.75);
+    padding: 25px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid rgba(34, 211, 238, 0.1);
+    overflow: visible;
+}
+
+.card p {
+    max-width: 700px;
+    margin: auto;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+ul {
+    columns: 2;
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 6px 0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+li:hover { color: #22d3ee; }
+
+li.active {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: rgba(34, 211, 238, 0.2);
+    box-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee;
+    color: #22d3ee;
+}
+
+.profile-box {
+    margin: 30px auto 0;
+    padding: 0 25px;
+    width: 100%;
+    max-width: 500px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-16px);
+    transition: max-height 0.8s cubic-bezier(0.4,0,0.2,1),
+                opacity 0.7s ease,
+                transform 0.7s ease,
+                padding 0.7s ease;
+}
+
+.profile-box.show {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+    padding: 25px;
+}
+
+.profile-konten {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 1;
+    transform: translateY(0);
+}
+.profile-konten.fade-out {
+    opacity: 0;
+    transform: translateY(10px);
+}
+.profile-konten.fade-in {
+    animation: profileMasuk 0.55s ease forwards;
+}
+@keyframes profileMasuk {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.foto-wrapper {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 15px;
+    position: relative;
+}
+
+.foto {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #22d3ee;
+    box-shadow: 0 0 15px #22d3ee;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    background: rgba(34, 211, 238, 0.1);
+    position: absolute;
+    top: 0; left: 0;
+}
+
+.avatar-inisial {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 3px solid #22d3ee;
+    box-shadow: 0 0 15px #22d3ee;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 6, 23, 0.8);
+    font-size: 42px;
+    font-weight: bold;
+    color: #22d3ee;
+    letter-spacing: 2px;
+    position: absolute;
+    top: 0; left: 0;
+}
+
+#profile-deskripsi {
+    max-width: 350px;
+    margin: 10px auto 0;
+    text-align: center;
+    line-height: 1.4;
+}
+
+h1 {
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.7);
+    letter-spacing: 2px;
+}
+
+footer { text-align: center; opacity: 0.6; }
+
+.watermark {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    z-index: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    font-size: clamp(18px, 3.5vw, 38px);
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: rgba(34, 211, 238, 0.045);
+    text-align: center;
+    line-height: 1.5;
+    user-select: none;
+}
+
+.subtitle-kelas {
+    text-align: center;
+    font-size: clamp(10px, 2vw, 14px);
+    letter-spacing: 3px;
+    color: rgba(34, 211, 238, 0.7);
+    margin-top: -18px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.judul-wrapper {
+    padding: 10px 10px 10px;
+    margin-bottom: 0;
+}
+
+.led-strip { width: 100%; margin-bottom: 12px; }
+.led {
+    width: 100%;
+    height: 5px;
+    border-radius: 3px;
+    background: #ffffff;
+    box-shadow: 0 0 6px 3px #fff, 0 0 18px 6px rgba(255,255,255,0.5), 0 0 35px 10px rgba(200,240,255,0.25);
+}
+
+/* ===================== MUSIC PLAYER ===================== */
+.music-card {
+    background: rgba(15, 23, 42, 0.75);
+    padding: 20px 25px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid rgba(34, 211, 238, 0.15);
+}
+
+.music-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(34, 211, 238, 0.5);
+    margin-bottom: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Audio player lokal */
+.audio-player {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(2, 6, 23, 0.7);
+    border-radius: 14px;
+    padding: 14px 18px;
+    border: 1px solid rgba(34, 211, 238, 0.12);
+    box-shadow: 0 0 20px rgba(34,211,238,0.07);
+}
+
+.ap-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid rgba(34,211,238,0.4);
+    box-shadow: 0 0 12px rgba(34,211,238,0.3);
+    background: rgba(34,211,238,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    animation: spinThumb 8s linear infinite;
+    animation-play-state: paused;
+}
+.ap-thumb.playing { animation-play-state: running; }
+@keyframes spinThumb {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.ap-info { flex: 1; min-width: 0; }
+
+.ap-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ap-artist {
+    font-size: 11px;
+    color: rgba(34,211,238,0.6);
+    margin-bottom: 8px;
+}
+
+.ap-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ap-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+}
+.ap-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #22d3ee, #06b6d4);
+    border-radius: 2px;
+    pointer-events: none;
+    transition: width 0.3s linear;
+}
+.ap-time {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    flex-shrink: 0;
+    min-width: 70px;
+    text-align: right;
+}
+
+.ap-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.ap-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #22d3ee, #0891b2);
+    color: #020617;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 16px rgba(34,211,238,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.ap-btn:hover { transform: scale(1.1); box-shadow: 0 0 24px rgba(34,211,238,0.7); }
+.ap-btn:active { transform: scale(0.95); }
+.ap-btn.playing::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(34,211,238,0.5);
+    animation: rippleBtn 1.5s ease-out infinite;
+}
+@keyframes rippleBtn {
+    0%  { transform: scale(1); opacity: 0.7; }
+    100%{ transform: scale(1.6); opacity: 0; }
+}
+
+.ap-vol {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+}
+.ap-vol input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 60px;
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+.ap-vol input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #22d3ee;
+    box-shadow: 0 0 4px #22d3ee;
+    cursor: pointer;
+}
+
+.ap-eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+}
+.ap-eq span {
+    width: 3px;
+    background: #22d3ee;
+    border-radius: 1px;
+    animation: eqAnim 0.8s ease-in-out infinite alternate;
+    animation-play-state: paused;
+}
+.ap-eq span:nth-child(1) { animation-duration: 0.5s; }
+.ap-eq span:nth-child(2) { animation-duration: 0.7s; animation-delay: 0.1s; }
+.ap-eq span:nth-child(3) { animation-duration: 0.6s; animation-delay: 0.2s; }
+.ap-eq span:nth-child(4) { animation-duration: 0.4s; animation-delay: 0.15s; }
+.ap-eq.active span { animation-play-state: running; }
+@keyframes eqAnim {
+    from { height: 3px; }
+    to   { height: 14px; }
+}
+
+@media (max-width: 640px) {
+    .audio-player { flex-wrap: wrap; }
+    .ap-controls { flex-direction: row; width: 100%; justify-content: center; }
+}
+
+/* ===================== ALBUM FOTO GANTUNG ===================== */
+.album-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(34, 211, 238, 0.5);
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.tali-utama {
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #5a3a1a 0%, #c8956c 20%, #8b5e3c 40%, #c8956c 60%, #8b5e3c 80%, #5a3a1a 100%);
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.album-scroll-wrap {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: grab;
+    padding-top: 4px;
+    padding-bottom: 20px;
+}
+.album-scroll-wrap::-webkit-scrollbar { display: none; }
+.album-scroll-wrap.grabbing { cursor: grabbing; }
+
+.foto-grid {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 0 12px;
+    min-width: max-content;
+}
+
+.album-section { padding-bottom: 10px; }
+
+.foto-zoom-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+.foto-zoom-overlay.aktif { display: flex; }
+
+.foto-zoom-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
+}
+
+.foto-zoom-besar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: zoomMasuk 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes zoomMasuk {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+.foto-zoom-frame {
+    background: #f5f0e8;
+    padding: 10px 10px 42px 10px;
+    border-radius: 3px;
+    box-shadow:
+        0 0 0 3px #fff,
+        0 0 30px 10px rgba(255,255,255,0.95),
+        0 0 70px 25px rgba(255,255,255,0.6),
+        0 0 120px 40px rgba(200,230,255,0.3);
+    width: min(80vw, 420px);
+}
+
+.foto-zoom-frame img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+    border-radius: 1px;
+}
+
+.foto-zoom-frame .placeholder-besar {
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a, #1e3a5f);
+    color: rgba(34,211,238,0.7);
+    font-size: 14px;
+    border-radius: 1px;
+}
+
+.foto-zoom-judul {
+    margin-top: 6px;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.foto-zoom-tutup {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border-radius: 50%;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.foto-zoom-tutup:hover { background: #22d3ee; color: #fff; }
+
+.foto-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+    transform-origin: top center;
+    transform: rotate(var(--miring, 0deg));
+    flex-shrink: 0;
+}
+
+.foto-item:hover {
+    transform: rotate(0deg) scale(1.08) translateY(-4px);
+    z-index: 10;
+}
+
+.tali-pendek {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(180deg, #8b5e3c 0%, #c8956c 60%, #a07050 100%);
+    border-radius: 1px;
+}
+
+.klip {
+    width: 14px;
+    height: 7px;
+    background: linear-gradient(180deg, #d0d0d0, #909090);
+    border-radius: 3px 3px 0 0;
+    margin-bottom: -1px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.klip::before, .klip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    width: 4px;
+    height: 6px;
+    background: #888;
+    border-radius: 0 0 2px 2px;
+}
+.klip::before { left: 2px; }
+.klip::after  { right: 2px; }
+
+.foto-frame {
+    width: 130px;
+    height: 98px;
+    background: #f5f0e8;
+    padding: 5px 5px 22px 5px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+    border-radius: 2px;
+    transition: box-shadow 0.4s ease;
+    overflow: visible;
+}
+
+.foto-frame .foto-inner {
+    width: 100%;
+    height: 66px;
+    overflow: hidden;
+    background: #1a2a3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.foto-frame .foto-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+}
+
+.foto-frame .foto-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    font-size: 10px;
+    color: rgba(34,211,238,0.6);
+    text-align: center;
+    padding: 4px;
+    line-height: 1.3;
+}
+
+.foto-frame .foto-caption {
+    position: absolute;
+    bottom: 3px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 8px;
+    color: #555;
+    font-family: 'Segoe UI', sans-serif;
+    letter-spacing: 0.3px;
+    padding: 0 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.foto-item.terpilih .foto-frame {
+    box-shadow:
+        0 0 0 2px #fff,
+        0 0 15px 5px rgba(255,255,255,0.95),
+        0 0 35px 12px rgba(255,255,255,0.6),
+        0 0 60px 20px rgba(200,230,255,0.35),
+        0 8px 20px rgba(0,0,0,0.4);
+}
+
+.swipe-hint {
+    text-align: center;
+    font-size: 10px;
+    color: rgba(34,211,238,0.35);
+    margin-top: 8px;
+    letter-spacing: 1px;
+    display: none;
+}
+@media (max-width: 640px) {
+    .swipe-hint { display: block; }
+    .player-wrapper { flex-wrap: wrap; }
+    .player-controls { flex-direction: row; width: 100%; justify-content: center; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="watermark">TEKNIK JARINGAN KOMPUTER<br>DAN TELEKOMUNIKASI</div>
+<canvas id="network-canvas"></canvas>
+
+<!-- OVERLAY ZOOM FOTO -->
+<div class="foto-zoom-overlay" id="fotoOverlay">
+    <div class="foto-zoom-backdrop" id="fotoBackdrop"></div>
+    <div class="foto-zoom-besar" id="fotoZoomBesar">
+        <button class="foto-zoom-tutup" id="fotoTutup">&#x2715;</button>
+        <div class="foto-zoom-frame" id="fotoZoomFrame">
+            <div class="placeholder-besar" id="fotoZoomPlaceholder"></div>
+            <img id="fotoZoomImg" src="" alt="" style="display:none;">
+            <div class="foto-zoom-judul" id="fotoZoomJudul"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="judul-wrapper">
+        <div class="led-strip" id="led-atas"></div>
+        <h1>XII TJKT 1</h1>
+        <p class="subtitle-kelas">Teknik Jaringan Komputer dan Telekomunikasi</p>
+    </div>
+
+    <div class="card">
+        <h2>Latar Belakang</h2>
+        <p>
+        Kelas XII TJKT 1 adalah tempat kami tumbuh bersama. 
+        Dari 36 orang, kini tersisa 33, meninggalkan cerita yang tidak akan terlupakan. 
+        Kami belajar bahwa setiap kebersamaan memiliki arti yang berharga.
+        </p>
+    </div>
+
+    <!-- ===================== MUSIK PLAYER ===================== -->
+    <div class="music-card">
+        <div class="music-label">canción de acompañamiento</div>
+        <audio id="audioPlayer" src="lagu/Lagu.mp3" preload="metadata"></audio>
+        <div class="audio-player">
+            <div class="ap-thumb" id="apThumb">🎵</div>
+            <div class="ap-info">
+                <div class="ap-title">Sampai Jadi Debu</div>
+                <div class="ap-artist">Banda Neira</div>
+                <div class="ap-progress-wrap">
+                    <div class="ap-bar-bg" id="apBarBg">
+                        <div class="ap-bar-fill" id="apBarFill"></div>
+                    </div>
+                    <div class="ap-time" id="apTime">0:00 / 0:00</div>
+                </div>
+            </div>
+            <div class="ap-controls">
+                <button class="ap-btn" id="apBtn">▶</button>
+                <div class="ap-vol">
+                    🔈<input type="range" id="apVol" min="0" max="1" step="0.01" value="0.8">🔊
+                </div>
+                <div class="ap-eq" id="apEq">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ===================== END MUSIK PLAYER ===================== -->
+
+    <div class="card">
+        <h2>Album Kenangan</h2>
+        <div class="album-section" id="albumSection">
+            <div class="album-label">📎 foto kebersamaan kelas</div>
+            <div class="tali-utama"></div>
+            <div class="album-scroll-wrap" id="albumScroll">
+                <div class="foto-grid" id="albumGrid"></div>
+            </div>
+            <div class="swipe-hint">← geser untuk lihat semua foto →</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Daftar Siswa</h2>
+        <ul id="list-siswa"></ul>
+        <div id="profile-box" class="profile-box">
+            <div class="profile-konten" id="profile-konten">
+                <div class="foto-wrapper">
+                    <img id="profile-foto" class="foto" src="" alt="foto siswa">
+                    <div id="profile-avatar" class="avatar-inisial"></div>
+                </div>
+                <h2 id="profile-nama"></h2>
+                <p id="profile-deskripsi"></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>©️ XII TJKT 1 - 2026-2027</footer>
+
+</div>
+
+<script>
+// =============================================
+// ANIMASI JARINGAN BACKGROUND
+// =============================================
+const canvas = document.getElementById('network-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, nodes = [], satellites = [], mouse = { x: -9999, y: -9999 };
+const NODE_COUNT = 70, MAX_DIST = 150;
+const NODE_COLOR = 'rgba(34, 211, 238,', LINE_COLOR = 'rgba(34, 211, 238,';
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+function createNodes() {
+    nodes = [];
+    for (let i = 0; i < NODE_COUNT; i++) {
+        nodes.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-0.5)*0.6, vy:(Math.random()-0.5)*0.6, r:Math.random()*2+1.5, pulse:Math.random()*Math.PI*2 });
+    }
+}
+
+function createSatellite() {
+    const side = Math.floor(Math.random()*4);
+    let x, y, angle;
+    if (side===0)      { x=-60;   y=Math.random()*H; angle=(Math.random()*0.5-0.25); }
+    else if (side===1) { x=W+60;  y=Math.random()*H; angle=Math.PI+(Math.random()*0.5-0.25); }
+    else if (side===2) { x=Math.random()*W; y=-60;   angle=Math.PI/2+(Math.random()*0.5-0.25); }
+    else               { x=Math.random()*W; y=H+60;  angle=-Math.PI/2+(Math.random()*0.5-0.25); }
+    const speed = 0.6+Math.random()*1.0;
+    return { x, y, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed, angle, size:8+Math.random()*6, trail:[], signalPulse:0, signalRadius:0, signalAlpha:0, blinkTimer:0 };
+}
+
+function initSatellites() { satellites=[]; for(let i=0;i<3;i++) satellites.push(createSatellite()); }
+
+function drawSatellite(s) {
+    ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(s.angle);
+    ctx.fillStyle='rgba(200,240,255,0.95)'; ctx.fillRect(-s.size/2,-s.size/3,s.size,s.size/1.5);
+    ctx.fillStyle='rgba(34,211,238,0.85)';
+    ctx.fillRect(-s.size*1.4,-s.size/4,s.size*0.85,s.size/2);
+    ctx.fillRect(s.size*0.55,-s.size/4,s.size*0.85,s.size/2);
+    ctx.strokeStyle='rgba(0,100,150,0.6)'; ctx.lineWidth=0.5;
+    for(let g=1;g<3;g++){
+        ctx.beginPath(); ctx.moveTo(-s.size*1.4+(s.size*0.85/3)*g,-s.size/4); ctx.lineTo(-s.size*1.4+(s.size*0.85/3)*g,s.size/4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(s.size*0.55+(s.size*0.85/3)*g,-s.size/4); ctx.lineTo(s.size*0.55+(s.size*0.85/3)*g,s.size/4); ctx.stroke();
+    }
+    ctx.strokeStyle='rgba(200,240,255,0.9)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,-s.size/3); ctx.lineTo(0,-s.size*0.85); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,1)'; ctx.beginPath(); ctx.arc(0,-s.size*0.85,1.5,0,Math.PI*2); ctx.fill();
+    if(Math.sin(s.blinkTimer*0.15)>0.3){ ctx.fillStyle='rgba(255,80,80,1)'; ctx.beginPath(); ctx.arc(s.size/4,0,2,0,Math.PI*2); ctx.fill(); }
+    ctx.restore();
+}
+
+function drawTrail(s) {
+    if(s.trail.length<2) return;
+    for(let i=1;i<s.trail.length;i++){
+        const alpha=(i/s.trail.length)*0.35;
+        ctx.beginPath(); ctx.moveTo(s.trail[i-1].x,s.trail[i-1].y); ctx.lineTo(s.trail[i].x,s.trail[i].y);
+        ctx.strokeStyle='rgba(34,211,238,'+alpha+')'; ctx.lineWidth=(i/s.trail.length)*2; ctx.stroke();
+    }
+}
+
+function updateSatellites() {
+    satellites.forEach((s,idx)=>{
+        s.x+=s.vx; s.y+=s.vy; s.blinkTimer++;
+        s.trail.push({x:s.x,y:s.y}); if(s.trail.length>40) s.trail.shift();
+        s.signalPulse++;
+        if(s.signalPulse%90===0){s.signalRadius=0;s.signalAlpha=0.8;}
+        if(s.signalAlpha>0){s.signalRadius+=2.5;s.signalAlpha-=0.015;}
+        if(s.x<-120||s.x>W+120||s.y<-120||s.y>H+120) satellites[idx]=createSatellite();
+    });
+}
+
+function drawFrame() {
+    ctx.clearRect(0,0,W,H);
+    nodes.forEach(n=>{
+        n.x+=n.vx; n.y+=n.vy; n.pulse+=0.02;
+        if(n.x<0||n.x>W) n.vx*=-1; if(n.y<0||n.y>H) n.vy*=-1;
+        const dx=mouse.x-n.x, dy=mouse.y-n.y, dm=Math.sqrt(dx*dx+dy*dy);
+        if(dm<120){n.x+=dx*0.01;n.y+=dy*0.01;}
+        const glow=0.5+0.5*Math.sin(n.pulse);
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+glow*1.5,0,Math.PI*2);
+        ctx.fillStyle=NODE_COLOR+(0.4+glow*0.5)+')'; ctx.fill();
+    });
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+        const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y, dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<MAX_DIST){ ctx.beginPath(); ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y); ctx.strokeStyle=LINE_COLOR+((1-dist/MAX_DIST)*0.4)+')'; ctx.lineWidth=0.8; ctx.stroke(); }
+    }
+    nodes.forEach(n=>{
+        const dx=mouse.x-n.x, dy=mouse.y-n.y, dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<180){ ctx.beginPath(); ctx.moveTo(mouse.x,mouse.y); ctx.lineTo(n.x,n.y); ctx.strokeStyle=LINE_COLOR+((1-dist/180)*0.7)+')'; ctx.lineWidth=1; ctx.stroke(); }
+    });
+    updateSatellites();
+    satellites.forEach(s=>{
+        drawTrail(s);
+        if(s.signalAlpha>0){ ctx.beginPath(); ctx.arc(s.x,s.y,s.signalRadius,0,Math.PI*2); ctx.strokeStyle='rgba(34,211,238,'+s.signalAlpha+')'; ctx.lineWidth=1; ctx.stroke(); }
+        drawSatellite(s);
+    });
+    requestAnimationFrame(drawFrame);
+}
+
+window.addEventListener('mousemove', e=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
+window.addEventListener('touchmove', e=>{ mouse.x=e.touches[0].clientX; mouse.y=e.touches[0].clientY; },{passive:true});
+window.addEventListener('resize', ()=>{ resize(); createNodes(); initSatellites(); });
+resize(); createNodes(); initSatellites(); drawFrame();
+
+// =============================================
+// LED PERMANEN
+// =============================================
+const ledStrip = document.getElementById('led-atas');
+const ledEl = document.createElement('div');
+ledEl.className = 'led';
+ledStrip.appendChild(ledEl);
+
+// =============================================
+// AUDIO PLAYER LOKAL
+// =============================================
+const audio    = document.getElementById('audioPlayer');
+const apBtn    = document.getElementById('apBtn');
+const apThumb  = document.getElementById('apThumb');
+const apBarBg  = document.getElementById('apBarBg');
+const apBarFill= document.getElementById('apBarFill');
+const apTime   = document.getElementById('apTime');
+const apVol    = document.getElementById('apVol');
+const apEq     = document.getElementById('apEq');
+
+function fmtTime(s) {
+    if (!s || isNaN(s)) return '0:00';
+    const m = Math.floor(s/60), sec = Math.floor(s%60);
+    return m + ':' + String(sec).padStart(2,'0');
+}
+
+function setAudioPlaying(state) {
+    apBtn.textContent = state ? '⏸' : '▶';
+    apBtn.classList.toggle('playing', state);
+    apThumb.classList.toggle('playing', state);
+    apEq.classList.toggle('active', state);
+}
+
+apBtn.addEventListener('click', () => {
+    if (audio.paused) { audio.play(); } else { audio.pause(); }
+});
+
+audio.addEventListener('play',  () => setAudioPlaying(true));
+audio.addEventListener('pause', () => setAudioPlaying(false));
+audio.addEventListener('ended', () => { setAudioPlaying(false); apBarFill.style.width='0%'; apTime.textContent='0:00 / ' + fmtTime(audio.duration); });
+
+audio.addEventListener('timeupdate', () => {
+    const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+    apBarFill.style.width = pct + '%';
+    apTime.textContent = fmtTime(audio.currentTime) + ' / ' + fmtTime(audio.duration);
+});
+
+apBarBg.addEventListener('click', e => {
+    const rect = apBarBg.getBoundingClientRect();
+    const pct  = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+});
+
+apVol.addEventListener('input', () => { audio.volume = parseFloat(apVol.value); });
+audio.volume = parseFloat(apVol.value);
+
+// =============================================
+// DRAG TO SCROLL (mouse & touch)
+// =============================================
+const scrollWrap = document.getElementById('albumScroll');
+let isDragging = false, startX = 0, scrollLeftPos = 0, dragMoved = false;
+
+scrollWrap.addEventListener('mousedown', e => {
+    isDragging = true; dragMoved = false;
+    startX = e.pageX - scrollWrap.offsetLeft;
+    scrollLeftPos = scrollWrap.scrollLeft;
+    scrollWrap.classList.add('grabbing');
+    e.preventDefault();
+});
+window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const x = e.pageX - scrollWrap.offsetLeft;
+    const walk = x - startX;
+    if (Math.abs(walk) > 5) dragMoved = true;
+    scrollWrap.scrollLeft = scrollLeftPos - walk;
+});
+window.addEventListener('mouseup', () => { isDragging = false; scrollWrap.classList.remove('grabbing'); });
+
+// =============================================
+// ALBUM FOTO GANTUNG
+// =============================================
+const albumFoto = [
+    { judul: "keberangkatan pkl", foto: "foto/album/album1.jpg" },
+    { judul: "pembagian jurnal",  foto: "foto/album/album2.jpg" },
+    { judul: "hari guru",         foto: "foto/album/album3.jpg" },
+    { judul: "lomba gerak jalan", foto: "foto/album/album4.jpg" },
+    { judul: "mpls",              foto: "foto/album/album5.jpg" },
+    { judul: "ujian prekatek",            foto: "foto/album/album6.jpg" }
+];
+
+const miringList = [-3, 2, -2, 3, -1.5, 2.5];
+let activeAlbum = null;
+
+function buatFotoGantung(item, idx) {
+    const wrap = document.createElement('div');
+    wrap.className = 'foto-item';
+    wrap.style.setProperty('--miring', miringList[idx % miringList.length] + 'deg');
+
+    const klip = document.createElement('div'); klip.className = 'klip';
+    const tali = document.createElement('div'); tali.className = 'tali-pendek';
+    const frame = document.createElement('div'); frame.className = 'foto-frame';
+    const inner = document.createElement('div'); inner.className = 'foto-inner';
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'foto-placeholder';
+    placeholder.textContent = item.judul;
+    inner.appendChild(placeholder);
+
+    const img = new Image();
+    img.onload = () => {
+        inner.innerHTML = '';
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;';
+        inner.appendChild(img);
+    };
+    img.src = item.foto;
+    img.alt = item.judul;
+
+    const caption = document.createElement('div');
+    caption.className = 'foto-caption';
+    caption.textContent = item.judul;
+
+    frame.appendChild(inner);
+    frame.appendChild(caption);
+    wrap.appendChild(klip);
+    wrap.appendChild(tali);
+    wrap.appendChild(frame);
+
+    wrap.addEventListener('click', () => {
+        if (dragMoved) return;
+        const overlay = document.getElementById('fotoOverlay');
+        const zoomImg = document.getElementById('fotoZoomImg');
+        const zoomPlaceholder = document.getElementById('fotoZoomPlaceholder');
+        const zoomJudul = document.getElementById('fotoZoomJudul');
+        const zoomBesar = document.getElementById('fotoZoomBesar');
+
+        zoomJudul.textContent = item.judul;
+
+        if (img.complete && img.naturalWidth > 0) {
+            zoomImg.src = img.src;
+            zoomImg.style.display = 'block';
+            zoomPlaceholder.style.display = 'none';
+        } else {
+            zoomImg.style.display = 'none';
+            zoomPlaceholder.style.display = 'flex';
+            zoomPlaceholder.textContent = item.judul;
+        }
+
+        zoomBesar.style.animation = 'none';
+        void zoomBesar.offsetWidth;
+        zoomBesar.style.animation = '';
+
+        overlay.classList.add('aktif');
+    });
+
+    return wrap;
+}
+
+const albumGrid = document.getElementById('albumGrid');
+albumFoto.forEach((item, i) => albumGrid.appendChild(buatFotoGantung(item, i)));
+
+function tutupFotoOverlay() {
+    document.getElementById('fotoOverlay').classList.remove('aktif');
+}
+document.getElementById('fotoBackdrop').addEventListener('click', tutupFotoOverlay);
+document.getElementById('fotoTutup').addEventListener('click', tutupFotoOverlay);
+document.addEventListener('keydown', e => { if(e.key==='Escape') tutupFotoOverlay(); });
+
+// =============================================
+// DATA SISWA
+// =============================================
+const siswa = [
+"Abdul Hafizh","Agung Rustian","Aii Karlina","Aldiyansyah",
+"Andika Andiyana","Anisa Julianti","Dela Aprilia",
+"Emir Sahdan Daud","Hasbi Arfan Afrizal","Ikbal Radipa",
+"Intan Dewi Sartika","M. Rapa Pauji Zamjami",
+"Marcel Albhan Eza Juanda","Mega Yulianti",
+"Muhamad Dimas Rayagung","Md Irgi Hidayatuloh",
+"Muhamad Miljam","Muhamad Rizal","Muhammad Nurochman",
+"Mutiara","Naship Murpid","Neng Restu Lestari TRJ",
+"Nensy Nurhayati","Nita Haryanti",
+"Nurul Aini Aprilianti","Rangga Saputra",
+"Salman Alfaridji","Siti Saadah",
+"Rahma Maulida","Willy Saputra Eka Wicaksana",
+"Elva Nesti Oktopratiwi","Sultan Ali Hasan Mubarok",
+"Azizah Oktaviani"
+];
+
+const siswaData = {
+"Abdul Hafizh": { foto:"foto/abdul.jpg", deskripsi:"Perkenalkan nama saya Abdul Hafizh, biasa dipanggil Abdul." },
+"Agung Rustian": { foto:"foto/agung.jpg", deskripsi:"Perkenalkan nama saya Agung Rustian, biasa dipanggil Agung." },
+"Aii Karlina": { foto:"foto/aii.jpg", deskripsi:"Perkenalkan nama saya Aii Karlina, biasa dipanggil Aii." },
+"Aldiyansyah": { foto:"foto/aldiyansyah.jpg", deskripsi:"Perkenalkan nama saya Aldiyansyah, biasa dipanggil Aldi." },
+"Andika Andiyana": { foto:"foto/andika.jpg", deskripsi:"Perkenalkan nama saya Andika Andiyana, biasa dipanggil Andika." },
+"Anisa Julianti": { foto:"foto/anisa.jpg", deskripsi:"Perkenalkan nama saya Anisa Julianti, biasa dipanggil Nisa." },
+"Dela Aprilia": { foto:"foto/dela.jpg", deskripsi:"Perkenalkan nama saya Dela Aprilia, biasa dipanggil Dela." },
+"Emir Sahdan Daud": { foto:"foto/emir.jpg", deskripsi:"Perkenalkan nama saya Emir Sahdan Daud, biasa dipanggil Emir." },
+"Hasbi Arfan Afrizal": { foto:"foto/hasbi.jpg", deskripsi:"Perkenalkan nama saya Hasbi Arfan Afrizal, biasa dipanggil Hasbi." },
+"Ikbal Radipa": { foto:"foto/ikbal.jpg", deskripsi:"Perkenalkan nama saya Ikbal Radipa, biasa dipanggil Ikbal." },
+"Intan Dewi Sartika": { foto:"foto/intan.jpg", deskripsi:"Perkenalkan nama saya Intan Dewi Sartika, biasa dipanggil Intan." },
+"M. Rapa Pauji Zamjami": { foto:"foto/rapa.jpg", deskripsi:"Perkenalkan nama saya M. Rapa Pauji Zamjami, biasa dipanggil Rapa." },
+"Marcel Albhan Eza Juanda": { foto:"foto/marcel.jpg", deskripsi:"Perkenalkan nama saya Marcel Albhan Eza Juanda, biasa dipanggil Marcel." },
+"Mega Yulianti": { foto:"foto/mega.jpg", deskripsi:"Perkenalkan nama saya Mega Yulianti, biasa dipanggil Mega." },
+"Muhamad Dimas Rayagung": { foto:"foto/dimas.jpg", deskripsi:"Perkenalkan nama saya Muhamad Dimas Rayagung, biasa dipanggil Dimas." },
+"Md Irgi Hidayatuloh": { foto:"foto/irgi.jpg", deskripsi:"Perkenalkan nama saya Md Irgi Hidayatuloh, biasa dipanggil Irgi." },
+"Muhamad Miljam": { foto:"foto/miljam.jpg", deskripsi:"Perkenalkan nama saya Muhamad Miljam, biasa dipanggil Miljam." },
+"Muhamad Rizal": { foto:"foto/rizal.jpg", deskripsi:"Perkenalkan nama saya Muhamad Rizal, biasa dipanggil Rizal." },
+"Muhammad Nurochman": { foto:"foto/nurochman.jpg", deskripsi:"Perkenalkan nama saya Muhammad Nurochman, biasa dipanggil Rohman." },
+"Mutiara": { foto:"foto/mutiara.jpg", deskripsi:"Perkenalkan nama saya Mutiara, biasa dipanggil Muti." },
+"Naship Murpid": { foto:"foto/naship.jpg", deskripsi:"Perkenalkan nama saya Naship Murpid, biasa dipanggil Nasip." },
+"Neng Restu Lestari TRJ": { foto:"foto/neng.jpg", deskripsi:"Perkenalkan nama saya Neng Restu Lestari TRJ, biasa dipanggil Restu." },
+"Nensy Nurhayati": { foto:"foto/nensy.jpg", deskripsi:"Perkenalkan nama saya Nensy Nurhayati, biasa dipanggil Nensy." },
+"Nita Haryanti": { foto:"foto/nita.jpg", deskripsi:"Perkenalkan nama saya Nita Haryanti, biasa dipanggil Nita." },
+"Nurul Aini Aprilianti": { foto:"foto/nurul.jpg", deskripsi:"Perkenalkan nama saya Nurul Aini Aprilianti, biasa dipanggil Nurul." },
+"Rangga Saputra": { foto:"foto/rangga.jpg", deskripsi:"Perkenalkan nama saya Rangga Saputra, biasa dipanggil Rangga." },
+"Salman Alfaridji": { foto:"foto/salman.jpg", deskripsi:"Perkenalkan nama saya Salman Alfaridji, biasa dipanggil Salman." },
+"Siti Saadah": { foto:"foto/siti.jpg", deskripsi:"Perkenalkan nama saya Siti Saadah, biasa dipanggil Saadah." },
+"Rahma Maulida": { foto:"foto/rahma.jpg", deskripsi:"Perkenalkan nama saya Rahma Maulida, biasa dipanggil Rahma." },
+"Willy Saputra Eka Wicaksana": { foto:"foto/willy.jpg", deskripsi:"Perkenalkan nama saya Willy Saputra Eka Wicaksana, biasa dipanggil Willy." },
+"Elva Nesti Oktopratiwi": { foto:"foto/elva.jpg", deskripsi:"Perkenalkan nama saya Elva Nesti Oktopratiwi, biasa dipanggil Elva." },
+"Sultan Ali Hasan Mubarok": { foto:"foto/sultan.jpg", deskripsi:"Perkenalkan nama saya Sultan Ali Hasan Mubarok, biasa dipanggil Sultan." },
+"Azizah Oktaviani": { foto:"foto/azizah.jpg", deskripsi:"Perkenalkan nama saya Azizah Oktaviani, biasa dipanggil Azizah." }
+};
+
+let activeNama = null;
+const box = document.getElementById('profile-box');
+
+function getData(nama) {
+    const data = siswaData[nama];
+    return { foto: data?.foto || "foto/default.jpg", deskripsi: (data?.deskripsi || "").trim() };
+}
+
+const list = document.getElementById('list-siswa');
+
+function tampilkanProfil(nama) {
+    const data = getData(nama);
+    const konten = document.getElementById('profile-konten');
+    const fotoEl = document.getElementById('profile-foto');
+    const avatarEl = document.getElementById('profile-avatar');
+
+    konten.classList.add('fade-out');
+
+    setTimeout(() => {
+        document.getElementById('profile-nama').textContent = nama;
+        document.getElementById('profile-deskripsi').textContent = data.deskripsi;
+
+        fotoEl.style.opacity = '0';
+        avatarEl.style.display = 'none';
+        fotoEl.style.display = 'block';
+
+        const tempImg = new Image();
+        tempImg.onload = () => {
+            fotoEl.src = data.foto;
+            fotoEl.style.opacity = '1';
+            avatarEl.style.display = 'none';
+        };
+        tempImg.onerror = () => {
+            fotoEl.style.display = 'none';
+            const inisial = nama.split(' ').slice(0,2).map(w=>w[0].toUpperCase()).join('');
+            avatarEl.textContent = inisial;
+            avatarEl.style.display = 'flex';
+        };
+        tempImg.src = data.foto;
+
+        konten.classList.remove('fade-out');
+        konten.classList.remove('fade-in');
+        void konten.offsetWidth;
+        konten.classList.add('fade-in');
+    }, 450);
+}
+
+siswa.forEach(nama => {
+    const li = document.createElement('li');
+    li.textContent = nama;
+    li.classList.add('nama');
+    li.onclick = function() {
+        if (activeNama === nama) {
+            li.classList.remove('active');
+            box.style.opacity = '0';
+            box.style.transform = 'translateY(-8px)';
+            setTimeout(() => {
+                box.classList.remove('show');
+                box.style.opacity = '';
+                box.style.transform = '';
+            }, 650);
+            activeNama = null;
+            return;
+        }
+
+        document.querySelectorAll('.nama').forEach(n => n.classList.remove('active'));
+        li.classList.add('active');
+
+        if (!activeNama) {
+            activeNama = nama;
+            tampilkanProfil(nama);
+            box.classList.add('show');
+            setTimeout(() => {
+                box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        } else {
+            activeNama = nama;
+            tampilkanProfil(nama);
+            setTimeout(() => {
+                box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+    };
+    list.appendChild(li);
+});
+</script>
+
+</body>
+</html>
